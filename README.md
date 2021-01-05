@@ -1,4 +1,4 @@
-#Robot arm hackathon ROS package and Arduino sketches#
+# Robot arm hackathon ROS package and Arduino sketches #
 
 This is a ros package for the robot arm hackathon
 
