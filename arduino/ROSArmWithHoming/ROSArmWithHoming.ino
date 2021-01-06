@@ -3,22 +3,27 @@
 #include <std_msgs/Float64MultiArray.h>
 #include <std_msgs/Int16MultiArray.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/Int16.h>
+
 
 
 #include <FlexyStepper.h> //https://github.com/Stan-Reifel/SpeedyStepper/blob/master/Documentation.pdf
 
 ros::NodeHandle node_handle;
 
-std_msgs::Float64MultiArray axisCommands;
+std_msgs::Float64MultiArray move_axis_relative;
 std_msgs::Float64MultiArray joints;
+std_msgs::Int16MultiArray bump_axis;
+std_msgs::Bool home_axis;
+std_msgs::Int16 switch1;
+std_msgs::Int16 switch2;
+std_msgs::Int16 switch3;
 
 // Connections to driver
 const int dirPin1 = 10;  // Direction for axis 1
 const int stepPin1 = 9;// Step for axis 1
-
 const int dirPin2 = 7;  // Direction for axis 2
 const int stepPin2 = 6; // Step for axis 2
-
 const int dirPin3 = 4;  // Direction for axis 3
 const int stepPin3 = 3; // Step for axis 3
 
@@ -26,7 +31,6 @@ const int LED_PIN = 13;
 const int LIMIT_SWITCH_PIN1 = 1;
 const int LIMIT_SWITCH_PIN2 = 1;
 const int LIMIT_SWITCH_PIN3 = 1;
-
 
 float axis_1_pos = 0;
 float axis_2_pos = 0;
@@ -37,16 +41,16 @@ int axis_1_dir = 0;
 int axis_2_dir = 0;
 int axis_3_dir = 0;
 bool begin_bump = false;
-
-
 bool begin_homing = false;
-
 
 FlexyStepper axis1;
 FlexyStepper axis2;
 FlexyStepper axis3;
 
-ros::Publisher arduino_publisher("arduino_publisher", &joints);
+ros::Publisher arduino_joint_publisher("arduino_joint_publisher", &joints);
+ros::Publisher switch1_publisher("arduino_switch1", &switch1);
+ros::Publisher switch2_publisher("arduino_switch2", &switch2);
+ros::Publisher switch3_publisher("arduino_switch3", &switch3);
 
 void move_axis_relative(const std_msgs::Float64MultiArray &move_axis_relative) {
   axis_1_pos = move_axis_relative.data[0];
@@ -59,7 +63,6 @@ void move_axis_relative(const std_msgs::Float64MultiArray &move_axis_relative) {
   
   begin_relative_move = true;
 
-  
 }
 
 void bump_axis(const std_msgs::Int16MultiArray &bump_axis) {
@@ -84,7 +87,7 @@ void home_axis(const std_msgs::Bool &home_axis) {
 }
 
 ros::Subscriber<std_msgs::Float64MultiArray> arduino_sub1("move_axis_relative", &move_axis_relative);
-ros::Subscriber<std_msgs::Float64MultiArray> arduino_sub2("bump_axis", &bump_axis);
+ros::Subscriber<std_msgs::Int16MultiArray> arduino_sub2("bump_axis", &bump_axis);
 ros::Subscriber<std_msgs::Bool> arduino_sub3("home_axis", &home_axis);
 
 
@@ -135,7 +138,7 @@ void loop() {
             joints.data[1]=axis2.getCurrentPositionInRevolutions()*10/44;
             joints.data[2]=axis3.getCurrentPositionInRevolutions()*10/44;
 
-            arduino_publisher.publish( &joints );
+            arduino_joint_publisher.publish( &joints );
       }
       begin_relative_move = 0;
     }
@@ -155,7 +158,7 @@ void loop() {
             joints.data[0]=axis1.getCurrentPositionInRevolutions()*8/20;
             joints.data[1]=axis2.getCurrentPositionInRevolutions()*10/44;
             joints.data[2]=axis3.getCurrentPositionInRevolutions()*10/44;
-            arduino_publisher.publish( &joints );
+            arduino_joint_publisher.publish( &joints );
 
             //will change move command if subscriber updates dir values
             axis1.setupRelativeMoveInRevolutions(axis_1_dir*1000);
@@ -216,6 +219,13 @@ void loop() {
         begin_homing= false;
       
     }
+
+  switch1 = digitalRead(LIMIT_SWITCH_PIN1);
+  switch2 = digitalRead(LIMIT_SWITCH_PIN2);
+  switch3 = digitalRead(LIMIT_SWITCH_PIN3);
+  switch1_publisher.publish( &switch1 );
+  switch2_publisher.publish( &switch2 );
+  switch3_publisher.publish( &switch3 );
   
-  delay(50);
+  delay(100);
 }
