@@ -1,41 +1,40 @@
-#define SWITCH1 8
-#define SWITCH2 9
-#define SWITCH3 10
-
-#define LED1 13
+#define SWITCH1 9
+#define SWITCH2 10
+#define SWITCH3 11
 
 void setup()
 {
-  pinMode(SWITCH1, INPUT);
-  pinMode(SWITCH2, INPUT);
-  pinMode(SWITCH3, INPUT);
-  pinMode(LED1, OUTPUT);
+  pinMode(SWITCH1, INPUT_PULLUP);
+  pinMode(SWITCH2, INPUT_PULLUP);
+  pinMode(SWITCH3, INPUT_PULLUP);
+  pinMode(LED_BUILTIN, OUTPUT);
+
+  Serial.begin(9600);
 
 }
 
 void loop()
 { 
-  if (digitalRead(SWITCH1) == HIGH) {
-    digitalWrite(LED1, HIGH);
-  } else {
-    digitalWrite(LED1, LOW);
-  }
 
-  if (digitalRead(SWITCH2) == HIGH) {
-    digitalWrite(LED1, HIGH);
+    int val1 = digitalRead(SWITCH1);
+    int val2 = digitalRead(SWITCH2);
+    int val3 = digitalRead(SWITCH3);
+  
+  if ((val1 == 0) || (val2 == 0) || (val3 == 0))  {
+    digitalWrite(LED_BUILTIN, HIGH);
   } else {
-    digitalWrite(LED1, LOW);
-  }
-
-  if (digitalRead(SWITCH3) == HIGH) {
-    digitalWrite(LED1, HIGH);
-  } else {
-    digitalWrite(LED1, LOW);
+    digitalWrite(LED_BUILTIN, LOW);
   }
 
 
 
-
+ Serial.print("Switch1:  ");
+ Serial.print(val1);
+  Serial.print("      Switch2:  ");
+ Serial.print(val2);
+  Serial.print("      Switch3:  ");
+ Serial.println(val3);
+ 
   
   delay(100);
 }

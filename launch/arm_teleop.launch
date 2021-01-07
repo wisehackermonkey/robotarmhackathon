@@ -4,6 +4,7 @@
     <param name="port" value="/dev/ttyACM0"/>
      </node>
 
-    <node pkg="robotarmhackathon" type="switches.py" name="Switches" output="screen">
+    <node pkg="threeAxisArm" type="arm_teleop.py" name="Arm_teleop" output="screen">
     </node>
+
 </launch>
