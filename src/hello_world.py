@@ -13,3 +13,4 @@ if __name__=='__main__':
         message = "Hello World!" #try changing the message
         pub.publish(message)  
         rate.sleep()
+        rospy.spin()

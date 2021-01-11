@@ -39,3 +39,4 @@ if __name__=='__main__':
         switch_message = str(switch1_val) + "  " + str(switch2_val) + "  " + str(switch3_val)
         pub.publish(switch_message)
         rate.sleep()
+        rospy.spin()

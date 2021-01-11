@@ -7,7 +7,7 @@ import threading
 import roslib; roslib.load_manifest('teleop_twist_keyboard')
 import rospy
 
-from std_msgs.msg import Int16MultiArray
+from geometry_msgs.msg import Pose
 
 import sys, select, termios, tty
 
@@ -37,7 +37,7 @@ moveBindings = {
 class PublishThread(threading.Thread):
     def __init__(self, rate):
         super(PublishThread, self).__init__()
-        self.publisher = rospy.Publisher('bump_axis', Int16MultiArray, queue_size = 1)
+        self.publisher = rospy.Publisher('bump_axis', Pose, queue_size = 1)
         self.axis1 = 0
         self.axis2 = 0
         self.axis3 = 0
@@ -81,15 +81,17 @@ class PublishThread(threading.Thread):
         self.join()
 
     def run(self):
-        command = Int16MultiArray()
+        command = Pose()
         while not self.done:
             self.condition.acquire()
             # Wait for a new message or timeout.
             self.condition.wait(self.timeout)
 
             # Copy state into twist message.
-            command_data = [self.axis1, self.axis2, self.axis3, self.home]
-            command.data = command_data
+            command.position.x = self.axis1
+            command.position.y = self.axis2
+            command.position.z  = self.axis3
+            command.orientation.w = self.home
 
             self.condition.release()
 
@@ -97,8 +99,10 @@ class PublishThread(threading.Thread):
             self.publisher.publish(command)
 
         # Publish stop message when thread exits.
-        command_data = [0, 0, 0, False]
-        command.data = command_data
+            command.position.x = self.axis1
+            command.position.y = self.axis2,
+            command.position.z  = self.axis3
+            command.orientation.w = self.home
         self.publisher.publish(command)
 
 
