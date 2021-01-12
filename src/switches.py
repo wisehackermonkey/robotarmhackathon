@@ -24,8 +24,9 @@ def switch3_callback(msg):
     switch3_val=msg.data
     if switch3_val==1:
         rospy.loginfo('Switch 3 was pressed')
-   
-if __name__=='__main__':
+
+
+def switches():
     rospy.init_node('Switch_multiplex')
    
     sub1=rospy.Subscriber('arduino_switch1', Int16, switch1_callback)
@@ -39,4 +40,9 @@ if __name__=='__main__':
         switch_message = str(switch1_val) + "  " + str(switch2_val) + "  " + str(switch3_val)
         pub.publish(switch_message)
         rate.sleep()
-        rospy.spin()
+
+if __name__ == '__main__':
+    try:
+        switches()
+    except rospy.ROSInterruptException:
+        pass

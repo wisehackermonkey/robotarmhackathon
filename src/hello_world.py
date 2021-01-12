@@ -4,13 +4,18 @@
 import rospy
 from std_msgs.msg import String
    
-if __name__=='__main__':
+
+def hello():
     rospy.init_node('Hello_world')
     pub=rospy.Publisher('my_messages', String, queue_size=1)
-    rate=rospy.Rate(1) #rate of it will be published in Hz
- 
+    rate=rospy.Rate(1) #rate of it will be published in Hz   
     while not rospy.is_shutdown():
         message = "Hello World!" #try changing the message
         pub.publish(message)  
         rate.sleep()
-        rospy.spin()
+
+if __name__ == '__main__':
+    try:
+        hello()
+    except rospy.ROSInterruptException:
+        pass
