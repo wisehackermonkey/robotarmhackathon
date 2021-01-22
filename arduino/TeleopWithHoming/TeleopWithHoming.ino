@@ -1,3 +1,4 @@
+#include "cstring.h"
 #include <ros.h> //http://wiki.ros.org/rosserial_arduino/Tutorials/Arduino%20IDE%20Setup
 #include <geometry_msgs/Pose.h>
 #include <AccelStepper.h>
